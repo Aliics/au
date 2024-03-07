@@ -38,29 +38,8 @@ int main(const int arg_len, char **args)
     int src_len;
     char *src = read_file(args[1], &src_len);
 
-    printf("%s", src);
-
     int tokens_len;
     AuToken *tokens = au_build_tokens(src, src_len, &tokens_len);
-    for (int i = 0; i < tokens_len; ++i)
-    {
-        char *meta = "(nil)";
-        const AuToken token = tokens[i];
-        if (token.type == AuTkWhitespace)
-        {
-            meta = (char[10]){};
-            sprintf(meta, "%d ws", token.data.whitespace_len);
-        }
-        else if (token.type == AuTkIdent)
-        {
-            meta = token.data.ident_data.data;
-        }
-        else if (token.type == AuTkString)
-        {
-            meta = token.data.string_data.data;
-        }
-        printf("%d: %s\n", token.type, meta);
-    }
 
     parse(&runtime, tokens, tokens_len);
 
