@@ -1,0 +1,14 @@
+-- This is a simple hello world program... kinda.
+
+using io
+using os
+
+if os.is_linux? then
+    io.puts "Hello, Linux!"
+else if os.macos? then
+    io.puts "Hello, MacOs!"
+else if os.windows? then
+    io.puts "Hello, Windows!"
+else
+    io.puts "Hello, World!"
+end
