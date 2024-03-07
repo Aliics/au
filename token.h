@@ -15,13 +15,19 @@
 #define AU_TK_END "end"
 #define AU_TK_USING "using"
 #define AU_TK_DEF "def"
+#define AU_TK_AND "and"
+#define AU_TK_OR "or"
 
 #define AU_STRING_QUOTE '"'
+
+#define AU_TK_LIT_NIL "nil"
+#define AU_TK_LIT_TRUE "true"
+#define AU_TK_LIT_FALSE "false"
 
 #define AU_MAX_IDENT_LEN 1024
 #define AU_MAX_STRING_LEN 65535
 
-typedef enum AUTokenType
+typedef enum AuTokenType
 {
     AuTkComment,
     AuTkNewline,
@@ -39,7 +45,12 @@ typedef enum AUTokenType
     AuTkEnd,
     AuTkUsing,
     AuTkDef,
-} AUTokenType;
+    AuTkAnd,
+    AuTkOr,
+    AuTkLitNil,
+    AuTkLitTrue,
+    AuTkLitFalse,
+} AuTokenType;
 
 typedef struct AUStringData
 {
@@ -47,24 +58,24 @@ typedef struct AUStringData
     int len;
 } AUStringData;
 
-typedef struct AUToken
+typedef struct AuToken
 {
-    AUTokenType type;
+    AuTokenType type;
     union
     {
         int whitespace_len;
         AUStringData ident_data;
         AUStringData string_data;
     } data;
-} AUToken;
+} AuToken;
 
-typedef struct AUTokenLiterals
+typedef struct AuTokenLiterals
 {
     char *literal;
-    AUTokenType type;
-} AUTokenMatch;
+    AuTokenType type;
+} AuTokenMatch;
 
-static const AUTokenMatch token_literals[] = {
+static const AuTokenMatch token_literals[] = {
         {.literal = AU_TK_NEWLINE, .type = AuTkNewline},
         {.literal = AU_TK_FULLSTOP, .type = AuTkFullStop},
         {.literal = AU_TK_OPEN_PAREN, .type = AuTkOpenParen},
@@ -77,10 +88,17 @@ static const AUTokenMatch token_literals[] = {
         {.literal = AU_TK_END, .type = AuTkEnd},
         {.literal = AU_TK_USING, .type = AuTkUsing},
         {.literal = AU_TK_DEF, .type = AuTkDef},
+        {.literal = AU_TK_AND, .type = AuTkAnd},
+        {.literal = AU_TK_OR, .type = AuTkOr},
+        {.literal = AU_TK_LIT_NIL, .type = AuTkLitNil},
+        {.literal = AU_TK_LIT_TRUE, .type = AuTkLitTrue},
+        {.literal = AU_TK_LIT_FALSE, .type = AuTkLitFalse},
 };
 
-AUToken *au_build_tokens(const char *, int, int *);
+AuToken *au_build_tokens(const char *, int, int *);
 
 AUStringData make_string_data(const char *, int);
+
+char *au_token_type_string(AuTokenType);
 
 #endif

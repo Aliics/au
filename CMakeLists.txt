@@ -9,4 +9,10 @@ add_executable(au au.c
         token.c
         token.h
         util.h
+        parse.c
+        parse.h
+        runtime.h
+        runtime.c
+        std_inlined.c
+        std_inlined.h
 )
