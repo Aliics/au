@@ -4,7 +4,6 @@ project(au C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(au au.c
-        assert.h
         file.h
         file.c
         token.c

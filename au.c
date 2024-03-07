@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "assert.h"
 #include "file.h"
 #include "token.h"
+#include "util.h"
 
 int main(const int arg_len, char **args)
 {

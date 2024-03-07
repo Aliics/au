@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "assert.h"
+#include "util.h"
 
 char *read_file(const char *filename, int *out_len)
 {
