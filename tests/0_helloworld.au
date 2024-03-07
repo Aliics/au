@@ -4,11 +4,11 @@ using io
 using os
 
 if os.is_linux? then
-    io.puts "Hello, Linux!"
-else if os.macos? then
-    io.puts "Hello, MacOs!"
-else if os.windows? then
-    io.puts "Hello, Windows!"
+    io.puts("Hello, Linux!")
+else if os.is_macos? then
+    io.puts("Hello, MacOs!")
+else if os.is_windows? then
+    io.puts("Hello, Windows!")
 else
-    io.puts "Hello, World!"
+    io.puts("Hello, World!")
 end

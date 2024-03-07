@@ -36,17 +36,18 @@ AUToken *au_build_tokens(const char *src, const int src_len, int *out_len)
     {
         if (src[i] == AU_STRING_QUOTE)
         {
+            if (in_string)
+            {
+                append_token(&tokens, out_len,
+                             (AUToken){
+                                     .type = AuTkString,
+                                     .data.string_data = make_string_data(string, string_len),
+                             });
+
+                string_len = 0;
+            }
+
             in_string = !in_string;
-            if (!in_string)
-                continue;
-
-            append_token(&tokens, out_len,
-                         (AUToken){
-                                 .type = AuTkString,
-                                 .data.string_data = make_string_data(string, string_len),
-                         });
-
-            string_len = 0;
 
             continue;
         }

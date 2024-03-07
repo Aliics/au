@@ -1,0 +1,3 @@
+def puts(str)
+    <<au/puts>>(str)
+end

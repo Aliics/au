@@ -14,6 +14,7 @@
 #define AU_TK_ELSE "else"
 #define AU_TK_END "end"
 #define AU_TK_USING "using"
+#define AU_TK_DEF "def"
 
 #define AU_STRING_QUOTE '"'
 
@@ -37,6 +38,7 @@ typedef enum AUTokenType
     AuTkElse,
     AuTkEnd,
     AuTkUsing,
+    AuTkDef,
 } AUTokenType;
 
 typedef struct AUStringData
@@ -74,6 +76,7 @@ static const AUTokenMatch token_literals[] = {
         {.literal = AU_TK_ELSE, .type = AuTkElse},
         {.literal = AU_TK_END, .type = AuTkEnd},
         {.literal = AU_TK_USING, .type = AuTkUsing},
+        {.literal = AU_TK_DEF, .type = AuTkDef},
 };
 
 AUToken *au_build_tokens(const char *, int, int *);

@@ -1,0 +1,11 @@
+def is_linux?
+    <<au/os_name>> == <<au/OS_LINUX>>
+end
+
+def is_macos?
+    <<au/os_name>> == <<au/OS_MACOS>>
+end
+
+def is_windows?
+    <<au/os_name>> == <<au/OS_WINDOWS>>
+end
