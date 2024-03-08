@@ -101,11 +101,11 @@ AuVar __parse_with_bool_operator(const AuRuntime *runtime, const AuToken *tokens
         return left_eval;
     }
 
-    const AuVar right = parse_expr(runtime, tokens, line, int_range(right_expr_range.start, right_expr_range.end));
+    const AuVar right_eval = parse_expr(runtime, tokens, line, int_range(right_expr_range.start, right_expr_range.end));
     ASSERT_WL(left_eval.type == AuBool, "Expression with %s must evaluate be a bool, got %s",
               au_token_type_string(operator_type), au_token_type_string(left_eval.type));
 
-    return right;
+    return right_eval;
 }
 
 AuVar parse_expr(const AuRuntime *runtime, const AuToken *tokens, const int line, const IntRange expr_range)
