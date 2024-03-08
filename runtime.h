@@ -30,11 +30,11 @@ typedef enum AuFunctionType
     AuFnRef,
 } AuFunctionType;
 
-typedef struct AuFunctionProgramTokens
+typedef struct AuFunctionDef
 {
     int starting_line;
     IntRange token_range;
-} AuFunctionProgramTokens;
+} AuFunctionDef;
 
 typedef struct AuFunction
 {
@@ -45,7 +45,7 @@ typedef struct AuFunction
     AuFunctionType type;
     union
     {
-        AuFunctionProgramTokens fn_prog_tokens;
+        AuFunctionDef fn_prog_tokens;
         AuVar (*fn_ref)(AuVar *);
     } fn;
 } AuFunction;

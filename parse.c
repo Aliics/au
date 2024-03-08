@@ -66,9 +66,9 @@ AuVar __invoke_named_function(AuRuntime *runtime, const AuToken *tokens, const A
         return fn->fn.fn_ref(args);
     }
 
-    const AuFunctionProgramTokens fpt = fn->fn.fn_prog_tokens;
-    return parse(runtime, &tokens[fpt.token_range.start], fpt.token_range.end - fpt.token_range.start,
-                 fpt.starting_line);
+    const AuFunctionDef def = fn->fn.fn_prog_tokens;
+    return parse(runtime, &tokens[def.token_range.start], def.token_range.end - def.token_range.start,
+                 def.starting_line);
 }
 
 void __parse_function_args(AuRuntime *runtime, const AuToken *tokens, const int line, const IntRange args_range,
@@ -251,7 +251,7 @@ AuVar parse(AuRuntime *runtime, const AuToken *tokens, const int tokens_len, con
                 const int def_end_i = __get_end_block_pos(tokens, tokens_len, i);
 
                 const AUStringData ident_data = tokens[i - 1].data.ident_data;
-                const AuFunctionProgramTokens fpt = {
+                const AuFunctionDef def = {
                         .starting_line = line,
                         .token_range = int_range(i + 1, def_end_i - 1),
                 };
@@ -259,7 +259,7 @@ AuVar parse(AuRuntime *runtime, const AuToken *tokens, const int tokens_len, con
                         .name = ident_data.data,
                         .name_len = ident_data.len,
                         .type = AuFnProgramTokens,
-                        .fn = fpt,
+                        .fn = def,
                 };
 
                 i = def_end_i;
