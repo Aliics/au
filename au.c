@@ -40,9 +40,14 @@ int main(const int arg_len, char **args)
 
     int tokens_len;
     AuToken *tokens = au_build_tokens(src, src_len, &tokens_len);
+    // for (int i = 0; i < tokens_len; ++i)
+    // {
+    //     printf("%s\n", au_token_type_string(tokens[i].type));
+    // }
+
+    free(src);
 
     parse(&runtime, tokens, tokens_len);
 
     free(tokens);
-    free(src);
 }

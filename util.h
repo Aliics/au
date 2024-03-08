@@ -9,7 +9,9 @@
     {                                                                                                                  \
         fprintf(stderr, fmt __VA_OPT__(, ) __VA_ARGS__);                                                               \
         exit(1);                                                                                                       \
-    }
+    } \
+    else \
+        NULL
 
 #define LENGTH(X) (sizeof X / sizeof X[0])
 

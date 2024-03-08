@@ -8,7 +8,7 @@
 #include "assert.h"
 #include "util.h"
 
-void append_token(AuToken **tokens, int *token_len, const AuToken new_token)
+void __append_token(AuToken **tokens, int *token_len, const AuToken new_token)
 {
     *token_len += 1;
     AuToken *tmp = realloc(*tokens, sizeof(AuToken) * *token_len);
@@ -38,7 +38,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
         {
             if (in_string)
             {
-                append_token(&tokens, out_len,
+                __append_token(&tokens, out_len,
                              (AuToken){
                                      .type = AuTkString,
                                      .data.string_data = make_string_data(string, string_len),
@@ -68,7 +68,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             if (strncmp(&src[i], match.literal, lit_len) != 0)
                 continue;
 
-            append_token(&tokens, out_len, (AuToken){.type = match.type});
+            __append_token(&tokens, out_len, (AuToken){.type = match.type});
             i += lit_len - 1;
             has_match = true;
             break;
@@ -85,7 +85,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             }
             --i; // Need to decrement so we aren't set to the next char.
 
-            append_token(&tokens, out_len,
+            __append_token(&tokens, out_len,
                          (AuToken){
                                  .type = AuTkWhitespace,
                                  .data.whitespace_len = ws_len,
@@ -99,7 +99,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             {
                 if (src[i] == AU_TK_NEWLINE[0])
                 {
-                    append_token(&tokens, out_len, (AuToken){.type = AuTkComment});
+                    __append_token(&tokens, out_len, (AuToken){.type = AuTkComment});
                     --i; // Need to decrement so we aren't set to the next char.
                     break;
                 }
@@ -115,7 +115,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
     clear_ident:
         if (ident_len)
         {
-            append_token(&tokens, out_len,
+            __append_token(&tokens, out_len,
                          (AuToken){
                                  .type = AuTkIdent,
                                  .data.ident_data = make_string_data(ident, ident_len),
