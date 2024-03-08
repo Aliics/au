@@ -59,6 +59,4 @@ AuModule *au_get_module(const AuRuntime *, const char *);
 
 AuFunction *au_get_function(const AuModule *, const char *);
 
-AuVar au_invoke_named_function(const AuModule *, const char *, AuVar *, int);
-
 #endif

@@ -38,6 +38,17 @@ int __get_token_pos_after(const AuToken *tokens, const int tokens_len, const int
     return -1;
 }
 
+AuVar __invoke_named_function(const AuModule *module, const char *function_name, AuVar *args, const int args_len,
+                                 const int line)
+{
+    const AuFunction *fn = au_get_function(module, function_name);
+    ASSERT_WL(fn, "Function %s does not exist", function_name);
+    ASSERT_WL(fn->params_len == args_len, "%d != %d. Incorrect argument count for function %s", args_len,
+              fn->params_len, fn->name);
+
+    return fn->fn(args);
+}
+
 AuVar parse_expr(const AuRuntime *runtime, const AuToken *tokens, const int line, const int start, const int end)
 {
     switch (tokens[start].type)
@@ -67,12 +78,12 @@ AuVar parse_expr(const AuRuntime *runtime, const AuToken *tokens, const int line
                 }
 
                 const char *function_name = tokens[start + 2].data.ident_data.data;
-                return au_invoke_named_function(module, function_name, args, args_len);
+                return __invoke_named_function(module, function_name, args, args_len, line);
             }
 
             __assert_seq_tk(tokens, (AuTokenType[]){AuTkIdent}, 1, start, line);
 
-            return au_invoke_named_function(&runtime->local, ident_name, NULL, 0);
+            return __invoke_named_function(&runtime->local, ident_name, NULL, 0, line);
         default:
             ERR_WL("Invalid start to expression");
     }

@@ -17,7 +17,7 @@ static const AuRuntime runtime = {
                                          {.name = "is_linux?", .name_len = 9, .fn = au_os_is_linux, .params_len = 0},
                                          {.name = "is_macos?", .name_len = 9, .fn = au_os_is_macos, .params_len = 0},
                                          {.name = "is_windows?",
-                                          .name_len = 1,
+                                          .name_len = 11,
                                           .fn = au_os_is_windows,
                                           .params_len = 0},
                                  },
