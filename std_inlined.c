@@ -33,7 +33,7 @@ AuVar au_os_is_windows(AuVar *)
 
 AuVar au_io_puts(AuVar *in)
 {
-    ASSERT(in->type == AuString, "Input must be a string\n");
+    ASSERT(in->type == AuString, "Input must be a string");
     printf("%s\n", in->data.string_val);
     return au_static_nil;
 }

@@ -7,7 +7,7 @@
 #define ASSERT(cond, fmt, ...)                                                                                         \
     if (!(cond))                                                                                                       \
     {                                                                                                                  \
-        fprintf(stderr, fmt __VA_OPT__(, ) __VA_ARGS__);                                                               \
+        fprintf(stderr, fmt "\n" __VA_OPT__(, ) __VA_ARGS__);                                                          \
         exit(1);                                                                                                       \
     }                                                                                                                  \
     else                                                                                                               \

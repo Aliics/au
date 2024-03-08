@@ -12,7 +12,7 @@ void __append_token(AuToken **tokens, int *token_len, const AuToken new_token)
 {
     *token_len += 1;
     AuToken *tmp = realloc(*tokens, sizeof(AuToken) * *token_len);
-    ASSERT(tmp, "Could not add token %d\n", new_token.type);
+    ASSERT(tmp, "Could not add token %d", new_token.type);
 
     *tokens = tmp;
     (*tokens)[*token_len - 1] = new_token;
@@ -54,7 +54,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
 
         if (in_string)
         {
-            ASSERT(string_len < AU_MAX_STRING_LEN, "String cannot be more than %d characters\n", AU_MAX_STRING_LEN);
+            ASSERT(string_len < AU_MAX_STRING_LEN, "String cannot be more than %d characters", AU_MAX_STRING_LEN);
 
             string[string_len++] = src[i];
             continue;
@@ -107,7 +107,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             goto clear_ident;
         }
 
-        ASSERT(ident_len < AU_MAX_IDENT_LEN, "Identifier cannot exceed %d characters\n", AU_MAX_IDENT_LEN);
+        ASSERT(ident_len < AU_MAX_IDENT_LEN, "Identifier cannot exceed %d characters", AU_MAX_IDENT_LEN);
 
         ident[ident_len++] = src[i];
         continue;

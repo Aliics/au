@@ -33,7 +33,7 @@ static const AuRuntime runtime = {
 
 int main(const int arg_len, char **args)
 {
-    ASSERT(arg_len > 1, "Expected one file as a program argument\n");
+    ASSERT(arg_len > 1, "Expected one file as a program argument");
 
     int src_len;
     char *src = read_file(args[1], &src_len);

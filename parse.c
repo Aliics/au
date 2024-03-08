@@ -3,7 +3,7 @@
 #include "runtime.h"
 #include "util.h"
 
-#define ASSERT_WL(cond, fmt, ...) ASSERT(cond, fmt " (line: %d)\n" __VA_OPT__(, ) __VA_ARGS__, line)
+#define ASSERT_WL(cond, fmt, ...) ASSERT(cond, fmt " (line: %d)" __VA_OPT__(, ) __VA_ARGS__, line)
 #define ERR_WL(fmt, ...)                                                                                               \
     fprintf(stderr, fmt " (line: %d)\n" __VA_OPT__(, ) __VA_ARGS__, line);                                             \
     exit(1)
