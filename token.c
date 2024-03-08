@@ -182,6 +182,10 @@ char *au_token_type_string(const AuTokenType type)
             return AU_TK_USING;
         case AuTkDef:
             return AU_TK_DEF;
+        case AuTkAnd:
+            return AU_TK_AND;
+        case AuTkOr:
+            return AU_TK_OR;
         case AuTkLitNil:
             return AU_TK_LIT_NIL;
         case AuTkLitTrue:

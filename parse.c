@@ -3,24 +3,22 @@
 #include "runtime.h"
 #include "util.h"
 
-#define ASSERT_SEQ_TK(n, ...) __assert_seq_tk(tokens, (AuTokenType[]){__VA_ARGS__}, n, i, line)
-
 #define ASSERT_WL(cond, fmt, ...) ASSERT(cond, fmt " (line: %d)\n" __VA_OPT__(, ) __VA_ARGS__, line)
 #define ERR_WL(fmt, ...)                                                                                               \
     fprintf(stderr, fmt " (line: %d)\n" __VA_OPT__(, ) __VA_ARGS__, line);                                             \
     exit(1)
 
 int __assert_seq_tk(const AuToken *all_tokens, const AuTokenType *wanted_tokens, const int wanted_tokens_len,
-                    const int current, const int line)
+                    const int current_index, const int line)
 {
-    AuTokenType last = all_tokens[current].type;
+    AuTokenType last = all_tokens[current_index].type;
     for (int i = 0; i < wanted_tokens_len; ++i)
     {
-        const AuTokenType tk_type = all_tokens[current + i + 1].type;
+        const AuTokenType tk_type = all_tokens[current_index + i + 1].type;
         const AuTokenType wanted_tk_type = wanted_tokens[i];
         ASSERT_WL(wanted_tk_type == tk_type, "Expected \"%s\" after \"%s\" but got \"%s\"",
                   au_token_type_string(wanted_tk_type), au_token_type_string(last), au_token_type_string(tk_type));
-        last = all_tokens[current + i + 1].type;
+        last = all_tokens[current_index + i + 1].type;
     }
 
     return wanted_tokens_len;
@@ -49,81 +47,132 @@ AuVar __invoke_named_function(const AuModule *module, const char *function_name,
     return fn->fn(args);
 }
 
-void __parse_function_args(const AuRuntime *runtime, const AuToken *tokens, const int line, const int start,
-                           const int end, AuVar *out_args, int *out_len)
+void __parse_function_args(const AuRuntime *runtime, const AuToken *tokens, const int line, const IntRange args_range,
+                           AuVar *out_args, int *out_len, int *out_i)
 {
     *out_len = 0;
+    *out_i = args_range.start;
 
-    if (tokens[start].type == AuTkOpenParen)
+    if (tokens[args_range.start].type == AuTkOpenParen)
     {
         return;
     }
 
-    int arg_start = start;
+    int arg_start = args_range.start;
     int closes_needed = 1;
-    for (int i = start; i <= end; ++i)
+    for (int i = args_range.start; i <= args_range.end; ++i)
     {
         if (tokens[i].type == AuTkOpenParen)
         {
             ++closes_needed;
         }
-        else if (tokens[i].type == AuTkComma)
+        else
         {
-            out_args[(*out_len)++] = parse_expr(runtime, tokens, line, arg_start, i - 1);
-            arg_start = i + 1;
-        }
-        else if (tokens[i].type == AuTkCloseParen && --closes_needed == 0)
-        {
-            if (i - arg_start > 0)
+            const IntRange arg_range = int_range(arg_start, i - 1);
+
+            if (tokens[i].type == AuTkComma)
             {
-                out_args[(*out_len)++] = parse_expr(runtime, tokens, line, arg_start, i - 1);
+                out_args[(*out_len)++] = parse_expr(runtime, tokens, line, arg_range);
+                arg_start = i + 1;
             }
-            break;
+            else if (tokens[i].type == AuTkCloseParen && --closes_needed == 0)
+            {
+                if (i - arg_start > 0)
+                {
+                    out_args[(*out_len)++] = parse_expr(runtime, tokens, line, arg_range);
+                }
+
+                *out_i = i;
+                break;
+            }
         }
     }
 }
 
-AuVar parse_expr(const AuRuntime *runtime, const AuToken *tokens, const int line, const int start, const int end)
+AuVar __parse_with_bool_operator(const AuRuntime *runtime, const AuToken *tokens, const int line,
+                                 const AuTokenType operator_type, const AuVar left_eval,
+                                 const IntRange right_expr_range)
 {
-    switch (tokens[start].type)
-    {
-        case AuTkString:
-            return (AuVar){
-                    .type = AuString,
-                    .data.string_val = tokens[start].data.string_data.data,
-            };
-        case AuTkLitTrue:
-        case AuTkLitFalse:
-            return (AuVar){
-                    .type = AuBool,
-                    .data.bool_val = tokens[start].type == AuTkLitTrue,
-            };
-        case AuTkIdent:
-            const char *ident_name = tokens[start].data.ident_data.data;
+    ASSERT_WL(left_eval.type == AuBool, "Expression with %s must evaluate be a bool, got %s",
+              au_token_type_string(operator_type), au_token_type_string(left_eval.type));
 
-            const AuModule *module = au_get_module(runtime, ident_name);
-            if (module)
-            {
-                __assert_seq_tk(tokens, (AuTokenType[]){AuTkFullStop, AuTkIdent}, 2, start, line);
+    if (left_eval.data.bool_val == (operator_type == AuTkOr))
+    {
+        return left_eval;
+    }
+
+    const AuVar right = parse_expr(runtime, tokens, line, int_range(right_expr_range.start, right_expr_range.end));
+    ASSERT_WL(left_eval.type == AuBool, "Expression with %s must evaluate be a bool, got %s",
+              au_token_type_string(operator_type), au_token_type_string(left_eval.type));
+
+    return right;
+}
+
+AuVar parse_expr(const AuRuntime *runtime, const AuToken *tokens, const int line, const IntRange expr_range)
+{
+    bool has_evaled = false;
+    AuVar eval = {.type = AuNil};
+
+    for (int i = expr_range.start; i <= expr_range.end; ++i)
+    {
+        switch (tokens[i].type)
+        {
+            case AuTkAnd:
+            case AuTkOr:
+                ASSERT_WL(has_evaled, "\"and\" cannot appear before expression");
+                return __parse_with_bool_operator(runtime, tokens, line, tokens[i].type, eval,
+                                                  int_range(i + 1, expr_range.end));
+            case AuTkString:
+                has_evaled = true;
+                eval = (AuVar){
+                        .type = AuString,
+                        .data.string_val = tokens[i].data.string_data.data,
+                };
+                break;
+            case AuTkLitTrue:
+            case AuTkLitFalse:
+                has_evaled = true;
+                eval = (AuVar){
+                        .type = AuBool,
+                        .data.bool_val = tokens[i].type == AuTkLitTrue,
+                };
+                break;
+            case AuTkIdent:
+                const char *ident_name = tokens[i].data.ident_data.data;
+
+                const AuModule *module = au_get_module(runtime, ident_name);
+                if (module)
+                {
+                    __assert_seq_tk(tokens, (AuTokenType[]){AuTkFullStop, AuTkIdent}, 2, i, line);
+
+                    const char *function_name = tokens[i + 2].data.ident_data.data;
+
+                    int args_len;
+                    AuVar args[64];
+                    __parse_function_args(runtime, tokens, line, int_range(i + 4, expr_range.end), args, &args_len, &i);
+
+                    has_evaled = true;
+                    eval = __invoke_named_function(module, function_name, args, args_len, line);
+                    break;
+                }
+
+                __assert_seq_tk(tokens, (AuTokenType[]){AuTkIdent}, 1, i, line);
 
                 int args_len;
                 AuVar args[64];
-                __parse_function_args(runtime, tokens, line, start + 4, end, args, &args_len);
+                __parse_function_args(runtime, tokens, line, int_range(i + 2, expr_range.end), args, &args_len, &i);
 
-                const char *function_name = tokens[start + 2].data.ident_data.data;
-                return __invoke_named_function(module, function_name, args, args_len, line);
-            }
-
-            __assert_seq_tk(tokens, (AuTokenType[]){AuTkIdent}, 1, start, line);
-
-            int args_len;
-            AuVar args[64];
-            __parse_function_args(runtime, tokens, line, start + 2, end, args, &args_len);
-
-            return __invoke_named_function(&runtime->local, ident_name, args, args_len, line);
-        default:
-            ERR_WL("Invalid start to expression");
+                has_evaled = true;
+                eval = __invoke_named_function(&runtime->local, ident_name, args, args_len, line);
+                break;
+            case AuTkWhitespace:
+                break; // Do nothing.
+            default:
+                ERR_WL("Invalid start to expression %s", au_token_type_string(tokens[i].type));
+        }
     }
+
+    return eval;
 }
 
 void parse(const AuRuntime *runtime, const AuToken *tokens, const int tokens_len)
@@ -138,14 +187,15 @@ void parse(const AuRuntime *runtime, const AuToken *tokens, const int tokens_len
                 ++line;
                 break;
             case AuTkUsing:
-                i += ASSERT_SEQ_TK(3, AuTkWhitespace, AuTkIdent, AuTkNewline);
+                i += __assert_seq_tk(tokens, (AuTokenType[]){AuTkWhitespace, AuTkIdent}, 2, i, line);
                 ++line;
                 break;
             case AuTkIf:
-                i += ASSERT_SEQ_TK(1, AuTkWhitespace);
+                i += __assert_seq_tk(tokens, (AuTokenType[]){AuTkWhitespace}, 1, i, line);
+
                 const int then_i = __get_token_pos_after(tokens, tokens_len, i, AuTkThen);
 
-                const AuVar expr_res = parse_expr(runtime, tokens, line, i + 1, then_i - 1);
+                const AuVar expr_res = parse_expr(runtime, tokens, line, int_range(i + 1, then_i - 1));
                 ASSERT_WL(expr_res.type == AuBool, "If statement condition must result in a boolean");
 
                 int end_i = then_i + 1;
@@ -181,10 +231,11 @@ void parse(const AuRuntime *runtime, const AuToken *tokens, const int tokens_len
                 break;
             case AuTkIdent:
                 const int newline_i = __get_token_pos_after(tokens, tokens_len, i, AuTkNewline);
+                const int end = newline_i > 0 ? newline_i : tokens_len;
 
-                parse_expr(runtime, tokens, line, i, newline_i - 1);
+                parse_expr(runtime, tokens, line, int_range(i, end - 1));
 
-                i = newline_i;
+                i = end;
 
                 break;
             case AuTkWhitespace:

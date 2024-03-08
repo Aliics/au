@@ -15,4 +15,5 @@ add_executable(au au.c
         runtime.c
         std_inlined.c
         std_inlined.h
+        util.c
 )
