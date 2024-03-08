@@ -1,0 +1,12 @@
+-- This is a simple hello world program... kinda.
+
+using io
+using os
+
+def is_very_true?
+    true and true
+end
+
+if is_very_true? then
+    io.puts("So true")
+end

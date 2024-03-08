@@ -7,29 +7,30 @@
 #include "token.h"
 #include "util.h"
 
-static const AuRuntime runtime = {
+static AuRuntime runtime = {
+        .local = {.functions = (AuFunction[1024]){}, .functions_len = 0},
         .modules =
                 (AuModule[]){
-                        {.name = "os",
-                         .name_len = 2,
-                         .functions =
-                                 (AuFunction[]){
-                                         {.name = "is_linux?", .name_len = 9, .fn = au_os_is_linux, .params_len = 0},
-                                         {.name = "is_macos?", .name_len = 9, .fn = au_os_is_macos, .params_len = 0},
-                                         {.name = "is_windows?",
-                                          .name_len = 11,
-                                          .fn = au_os_is_windows,
-                                          .params_len = 0},
-                                 },
-                         .functions_len = 3},
-                        {.name = "io",
-                         .name_len = 2,
-                         .functions =
-                                 (AuFunction[]){
-                                         {.name = "puts", .name_len = 4, .fn = au_io_puts, .params_len = 1},
-                                 },
-                         .functions_len = 1}},
-        .modules_len = 2};
+                        {
+                                .name = "os",
+                                .name_len = 2,
+                                .functions =
+                                        (AuFunction[]){
+                                                au_os_is_linux_function,
+                                                au_os_is_macos_function,
+                                                au_os_is_windows_function,
+                                        },
+                                .functions_len = 3,
+                        },
+                        {
+                                .name = "io",
+                                .name_len = 2,
+                                .functions = (AuFunction[]){au_io_puts_function},
+                                .functions_len = 1,
+                        },
+                },
+        .modules_len = 2,
+};
 
 int main(const int arg_len, char **args)
 {
@@ -47,7 +48,7 @@ int main(const int arg_len, char **args)
 
     free(src);
 
-    parse(&runtime, tokens, tokens_len);
+    parse(&runtime, tokens, tokens_len, 0);
 
     free(tokens);
 }

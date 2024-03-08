@@ -27,6 +27,7 @@
 
 #define AU_MAX_IDENT_LEN 1024
 #define AU_MAX_STRING_LEN 65535
+#include <stdbool.h>
 
 typedef enum AuTokenType
 {
@@ -75,27 +76,28 @@ typedef struct AuTokenLiterals
 {
     char *literal;
     AuTokenType type;
+    bool can_terminate_literal;
 } AuTokenMatch;
 
-static const AuTokenMatch token_literals[] = {
-        {.literal = AU_TK_NEWLINE, .type = AuTkNewline},
-        {.literal = AU_TK_FULLSTOP, .type = AuTkFullStop},
-        {.literal = AU_TK_COMMA, .type = AuTkComma},
-        {.literal = AU_TK_OPEN_PAREN, .type = AuTkOpenParen},
-        {.literal = AU_TK_CLOSE_PAREN, .type = AuTkCloseParen},
-        {.literal = AU_TK_ASSIGN, .type = AuTkAssign},
-        {.literal = AU_TK_EQUALS, .type = AuTkEquals},
-        {.literal = AU_TK_IF, .type = AuTkIf},
-        {.literal = AU_TK_THEN, .type = AuTkThen},
-        {.literal = AU_TK_ELSE, .type = AuTkElse},
-        {.literal = AU_TK_END, .type = AuTkEnd},
-        {.literal = AU_TK_USING, .type = AuTkUsing},
-        {.literal = AU_TK_DEF, .type = AuTkDef},
-        {.literal = AU_TK_AND, .type = AuTkAnd},
-        {.literal = AU_TK_OR, .type = AuTkOr},
-        {.literal = AU_TK_LIT_NIL, .type = AuTkLitNil},
-        {.literal = AU_TK_LIT_TRUE, .type = AuTkLitTrue},
-        {.literal = AU_TK_LIT_FALSE, .type = AuTkLitFalse},
+static const AuTokenMatch token_matches[] = {
+        {.literal = AU_TK_NEWLINE, .type = AuTkNewline, .can_terminate_literal = true},
+        {.literal = AU_TK_FULLSTOP, .type = AuTkFullStop, .can_terminate_literal = true},
+        {.literal = AU_TK_COMMA, .type = AuTkComma, .can_terminate_literal = true},
+        {.literal = AU_TK_OPEN_PAREN, .type = AuTkOpenParen, .can_terminate_literal = true},
+        {.literal = AU_TK_CLOSE_PAREN, .type = AuTkCloseParen, .can_terminate_literal = true},
+        {.literal = AU_TK_ASSIGN, .type = AuTkAssign, .can_terminate_literal = true},
+        {.literal = AU_TK_EQUALS, .type = AuTkEquals, .can_terminate_literal = true},
+        {.literal = AU_TK_IF, .type = AuTkIf, .can_terminate_literal = false},
+        {.literal = AU_TK_THEN, .type = AuTkThen, .can_terminate_literal = false},
+        {.literal = AU_TK_ELSE, .type = AuTkElse, .can_terminate_literal = false},
+        {.literal = AU_TK_END, .type = AuTkEnd, .can_terminate_literal = false},
+        {.literal = AU_TK_USING, .type = AuTkUsing, .can_terminate_literal = false},
+        {.literal = AU_TK_DEF, .type = AuTkDef, .can_terminate_literal = false},
+        {.literal = AU_TK_AND, .type = AuTkAnd, .can_terminate_literal = false},
+        {.literal = AU_TK_OR, .type = AuTkOr, .can_terminate_literal = false},
+        {.literal = AU_TK_LIT_NIL, .type = AuTkLitNil, .can_terminate_literal = false},
+        {.literal = AU_TK_LIT_TRUE, .type = AuTkLitTrue, .can_terminate_literal = false},
+        {.literal = AU_TK_LIT_FALSE, .type = AuTkLitFalse, .can_terminate_literal = false},
 };
 
 AuToken *au_build_tokens(const char *, int, int *);

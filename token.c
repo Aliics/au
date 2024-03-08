@@ -39,10 +39,10 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             if (in_string)
             {
                 __append_token(&tokens, out_len,
-                             (AuToken){
-                                     .type = AuTkString,
-                                     .data.string_data = make_string_data(string, string_len),
-                             });
+                               (AuToken){
+                                       .type = AuTkString,
+                                       .data.string_data = make_string_data(string, string_len),
+                               });
 
                 string_len = 0;
             }
@@ -61,12 +61,17 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
         }
 
         bool has_match = false;
-        for (int j = 0; j < LENGTH(token_literals); ++j)
+        for (int j = 0; j < LENGTH(token_matches); ++j)
         {
-            const AuTokenMatch match = token_literals[j];
+            const AuTokenMatch match = token_matches[j];
             const int lit_len = strlen(match.literal);
             if (strncmp(&src[i], match.literal, lit_len) != 0)
                 continue;
+
+            if (!match.can_terminate_literal && ident_len > 0)
+            {
+                goto continue_literal;
+            }
 
             __append_token(&tokens, out_len, (AuToken){.type = match.type});
             i += lit_len - 1;
@@ -86,10 +91,10 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             --i; // Need to decrement so we aren't set to the next char.
 
             __append_token(&tokens, out_len,
-                         (AuToken){
-                                 .type = AuTkWhitespace,
-                                 .data.whitespace_len = ws_len,
-                         });
+                           (AuToken){
+                                   .type = AuTkWhitespace,
+                                   .data.whitespace_len = ws_len,
+                           });
             goto clear_ident;
         }
 
@@ -107,6 +112,7 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
             goto clear_ident;
         }
 
+    continue_literal:
         ASSERT(ident_len < AU_MAX_IDENT_LEN, "Identifier cannot exceed %d characters", AU_MAX_IDENT_LEN);
 
         ident[ident_len++] = src[i];
@@ -116,10 +122,10 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
         if (ident_len)
         {
             __append_token(&tokens, out_len,
-                         (AuToken){
-                                 .type = AuTkIdent,
-                                 .data.ident_data = make_string_data(ident, ident_len),
-                         });
+                           (AuToken){
+                                   .type = AuTkIdent,
+                                   .data.ident_data = make_string_data(ident, ident_len),
+                           });
 
             // Swap ident with the newly added token.
             const AuToken tmp = tokens[*out_len - 1];

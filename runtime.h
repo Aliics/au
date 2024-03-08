@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#include "util.h"
+
 typedef enum AuVarType
 {
     AuNil,
@@ -22,13 +24,30 @@ typedef struct AuVar
     } data;
 } AuVar;
 
+typedef enum AuFunctionType
+{
+    AuFnProgramTokens,
+    AuFnRef,
+} AuFunctionType;
+
+typedef struct AuFunctionProgramTokens
+{
+    int starting_line;
+    IntRange token_range;
+} AuFunctionProgramTokens;
+
 typedef struct AuFunction
 {
     char *name;
     int name_len;
 
     int params_len;
-    AuVar (*fn)(AuVar *);
+    AuFunctionType type;
+    union
+    {
+        AuFunctionProgramTokens fn_prog_tokens;
+        AuVar (*fn_ref)(AuVar *);
+    } fn;
 } AuFunction;
 
 typedef struct AuModule
