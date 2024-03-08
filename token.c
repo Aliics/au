@@ -156,6 +156,8 @@ char *au_token_type_string(const AuTokenType type)
             return "(whitespace)";
         case AuTkFullStop:
             return AU_TK_FULLSTOP;
+        case AuTkComma:
+            return AU_TK_COMMA;
         case AuTkIdent:
             return "(ident)";
         case AuTkString:

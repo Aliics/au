@@ -5,6 +5,7 @@
 #define AU_TK_NEWLINE "\n"
 #define AU_TK_WHITESPACE " "
 #define AU_TK_FULLSTOP "."
+#define AU_TK_COMMA ","
 #define AU_TK_OPEN_PAREN "("
 #define AU_TK_CLOSE_PAREN ")"
 #define AU_TK_ASSIGN "="
@@ -33,6 +34,7 @@ typedef enum AuTokenType
     AuTkNewline,
     AuTkWhitespace,
     AuTkFullStop,
+    AuTkComma,
     AuTkIdent,
     AuTkString,
     AuTkOpenParen,
@@ -78,6 +80,7 @@ typedef struct AuTokenLiterals
 static const AuTokenMatch token_literals[] = {
         {.literal = AU_TK_NEWLINE, .type = AuTkNewline},
         {.literal = AU_TK_FULLSTOP, .type = AuTkFullStop},
+        {.literal = AU_TK_COMMA, .type = AuTkComma},
         {.literal = AU_TK_OPEN_PAREN, .type = AuTkOpenParen},
         {.literal = AU_TK_CLOSE_PAREN, .type = AuTkCloseParen},
         {.literal = AU_TK_ASSIGN, .type = AuTkAssign},

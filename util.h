@@ -15,4 +15,7 @@
 
 #define LENGTH(X) (sizeof X / sizeof X[0])
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #endif
