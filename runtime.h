@@ -41,7 +41,9 @@ typedef struct AuFunction
     char *name;
     int name_len;
 
+    char *params[64];
     int params_len;
+
     AuFunctionType type;
     union
     {
@@ -49,6 +51,14 @@ typedef struct AuFunction
         AuVar (*fn_ref)(AuVar *);
     } fn;
 } AuFunction;
+
+typedef struct AuVarDef
+{
+    char *name;
+    int name_len;
+
+    AuVar var;
+} AuVarDef;
 
 typedef struct AuModule
 {
@@ -58,7 +68,7 @@ typedef struct AuModule
     AuFunction *functions;
     int functions_len;
 
-    AuVar *variables;
+    AuVarDef *variables;
     int variables_len;
 } AuModule;
 
@@ -77,5 +87,7 @@ static const AuVar au_static_false = {.type = AuBool, .data = {.bool_val = false
 AuModule *au_get_module(const AuRuntime *, const char *);
 
 AuFunction *au_get_function(const AuModule *, const char *);
+
+AuVarDef *au_get_variable(const AuModule *, const char *);
 
 #endif

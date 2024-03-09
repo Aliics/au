@@ -35,3 +35,20 @@ AuFunction *au_get_function(const AuModule *module, const char *name)
 
     return NULL;
 }
+
+
+AuVarDef *au_get_variable(const AuModule *module, const char *name)
+{
+    for (int i = 0; i < module->variables_len; ++i)
+    {
+        const AuVarDef var = module->variables[i];
+        if (strncmp(name, var.name, var.name_len) != 0)
+        {
+            continue;
+        }
+
+        return &module->variables[i];
+    }
+
+    return NULL;
+}

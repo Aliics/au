@@ -7,6 +7,16 @@ def is_very_true?
     true and true
 end
 
+def are_you_lying?(lies)
+    not lies
+end
+
 if is_very_true? then
     io.puts("So true")
+end
+
+if are_you_lying?(false) then
+    io.puts("Thank you")
+else
+    io.puts("Liar liar plants for hire")
 end

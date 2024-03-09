@@ -8,7 +8,12 @@
 #include "util.h"
 
 static AuRuntime runtime = {
-        .local = {.functions = (AuFunction[1024]){}, .functions_len = 0},
+        .local = {
+            .functions = (AuFunction[1024]){},
+            .functions_len = 0,
+            .variables = (AuVarDef[1024]){},
+            .variables_len = 0,
+        },
         .modules =
                 (AuModule[]){
                         {
