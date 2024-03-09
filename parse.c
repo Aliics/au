@@ -56,10 +56,10 @@ int __get_end_block_pos(const AuParseCtx *ctx, const int start)
     return -1;
 }
 
-int __define_new_function(const AuParseCtx *ctx, const AuStringData ident_data, const int start)
+int __define_new_function(AuParseCtx *ctx, const AuStringData ident_data, const int start)
 {
     int i = start;
-    AuFunction *new_function = &ctx->rt->local.functions[ctx->rt->local.functions_len++];
+    AuFunction *new_function = &ctx->rt.local.functions[ctx->rt.local.functions_len++];
 
     if (ctx->tks[i + 1].type == AuTkOpenParen)
     {
@@ -359,7 +359,7 @@ AuVar parse_expr(AuParseCtx *ctx, const IntRange expr_range)
                     break;
                 }
 
-                AuModule *local_module = &ctx->rt->local;
+                AuModule *local_module = &ctx->rt.local;
 
                 const AuVarDef *local_var = au_get_variable(local_module, ident_name);
                 if (local_var)

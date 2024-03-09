@@ -7,7 +7,7 @@
 
 typedef struct AuParseCtx
 {
-    AuRuntime *rt;
+    AuRuntime rt;
     AuToken *tks;
     int tks_len;
     int ln;

@@ -2,19 +2,17 @@
 
 #include <string.h>
 
-#include "util.h"
-
-AuModule *au_get_module(const AuRuntime *runtime, const char *name)
+AuModule *au_get_module(const AuRuntime runtime, const char *name)
 {
-    for (int i = 0; i < runtime->modules_len; ++i)
+    for (int i = 0; i < runtime.modules_len; ++i)
     {
-        const AuModule mod = runtime->modules[i];
+        const AuModule mod = runtime.modules[i];
         if (strncmp(mod.name, name, mod.name_len) != 0)
         {
             continue;
         }
 
-        return &runtime->modules[i];
+        return &runtime.modules[i];
     }
 
     return NULL;

@@ -84,7 +84,7 @@ typedef struct AuRuntime
 
 
 
-AuModule *au_get_module(const AuRuntime *, const char *);
+AuModule *au_get_module(AuRuntime, const char *);
 
 AuFunction *au_get_function(const AuModule *, const char *);
 

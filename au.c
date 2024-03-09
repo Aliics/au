@@ -55,7 +55,7 @@ int main(const int arg_len, char **args)
     free(src);
 
     AuParseCtx ctx = {
-            .rt = &runtime,
+            .rt = runtime,
             .tks = tokens,
             .tks_len = tokens_len,
             .ln = 1,
