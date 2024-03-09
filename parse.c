@@ -104,11 +104,9 @@ int __define_new_function(const AuParseCtx *ctx, const AuStringData ident_data, 
     return def_end_i;
 }
 
-AuVar parse(AuParseCtx *ctx, const IntRange tokens_range, const int starting_line)
+AuVar parse(AuParseCtx *ctx, const IntRange tokens_range)
 {
     AuVar eval = {.type = AuNil};
-
-    unsigned int line = starting_line;
 
     for (int i = tokens_range.start; i < tokens_range.end; ++i)
     {
@@ -116,13 +114,13 @@ AuVar parse(AuParseCtx *ctx, const IntRange tokens_range, const int starting_lin
         {
             case AuTkNewline:
             {
-                ++line;
+                ++ctx->ln;
                 break;
             }
             case AuTkUsing:
             {
                 __walk_token_sequence(ctx, (AuTokenType[]){AuTkWhitespace, AuTkIdent}, 2, &i);
-                ++line;
+                ++ctx->ln;
                 break;
             }
             case AuTkIf:
@@ -142,11 +140,11 @@ AuVar parse(AuParseCtx *ctx, const IntRange tokens_range, const int starting_lin
                 if (expr_res.data.bool_val)
                 {
                     const int block_end = else_i > 0 && else_i < if_end_i ? else_i : if_end_i;
-                    parse(ctx, int_range(then_i + 1, block_end), line);
+                    parse(ctx, int_range(then_i + 1, block_end));
                 }
                 else if (else_i > 0)
                 {
-                    parse(ctx, int_range(else_i + 1, if_end_i), line);
+                    parse(ctx, int_range(else_i + 1, if_end_i));
                 }
 
                 i = if_end_i;
@@ -165,7 +163,7 @@ AuVar parse(AuParseCtx *ctx, const IntRange tokens_range, const int starting_lin
                 {
                     if (ctx->tks[j].type == AuTkNewline)
                     {
-                        ++line;
+                        ++ctx->ln;
                     }
                 }
 
@@ -179,7 +177,7 @@ AuVar parse(AuParseCtx *ctx, const IntRange tokens_range, const int starting_lin
             default:
             {
                 const int newline_i = __get_token_pos_after(ctx, i, AuTkNewline);
-                const int end = newline_i > 0 ? newline_i : ctx->tks_len;
+                const int end = MIN(newline_i > 0 ? newline_i : ctx->tks_len, tokens_range.end);
 
                 eval = parse_expr(ctx, int_range(i, end - 1));
 
@@ -218,7 +216,12 @@ AuVar __invoke_named_function(AuParseCtx *ctx, AuModule *module, const char *fun
         };
     }
 
-    const AuVar result = parse(ctx, def.token_range, def.starting_line);
+    // When calling a function, we need to change the "line" we are parsing.
+    const int ret_ln = ctx->ln;
+    ctx->ln = def.starting_line;
+
+    const AuVar result = parse(ctx, def.token_range);
+    ctx->ln = ret_ln;
 
     // Pop variables off afterwards. We don't want them.
     for (int i = origin_variables_len; i < module->variables_len; ++i)

@@ -11,7 +11,7 @@ end
 def are_you_lying?(lies) not lies end
 
 def shame
-    io.puts("Liar liar plants for hire")
+    io.puts("Liar liar plants for hire!")
 end
 
 if is_very_true? then
@@ -21,5 +21,5 @@ end
 if not are_you_lying?(false) then
     io.puts("Thank you")
 else
-    io.puts("Liar liar plants for hire")
+    shame() -- Functions can be called with empty parentheses even if it takes no arguments.
 end

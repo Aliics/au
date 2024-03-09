@@ -61,7 +61,7 @@ int main(const int arg_len, char **args)
             .ln = 1,
     };
 
-    parse(&ctx, int_range(0, tokens_len - 1), 0);
+    parse(&ctx, int_range(0, tokens_len - 1));
 
     free(tokens);
 }

@@ -13,7 +13,7 @@ typedef struct AuParseCtx
     int ln;
 } AuParseCtx;
 
-AuVar parse(AuParseCtx *, IntRange, int);
+AuVar parse(AuParseCtx *, IntRange);
 AuVar parse_expr(AuParseCtx *, IntRange);
 
 #endif
