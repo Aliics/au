@@ -5,6 +5,8 @@
 
 #include "util.h"
 
+#define AU_MAX_FUNCTION_PARAMS 64
+
 typedef enum AuVarType
 {
     AuNil,
@@ -41,7 +43,7 @@ typedef struct AuFunction
     char *name;
     int name_len;
 
-    char *params[64];
+    char *params[AU_MAX_FUNCTION_PARAMS];
     int params_len;
 
     AuFunctionType type;
@@ -80,9 +82,7 @@ typedef struct AuRuntime
     AuModule local;
 } AuRuntime;
 
-static const AuVar au_static_nil = {.type = AuNil};
-static const AuVar au_static_true = {.type = AuBool, .data = {.bool_val = true}};
-static const AuVar au_static_false = {.type = AuBool, .data = {.bool_val = false}};
+
 
 AuModule *au_get_module(const AuRuntime *, const char *);
 

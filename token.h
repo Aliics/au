@@ -1,6 +1,8 @@
 #ifndef AU_TOKEN_H
 #define AU_TOKEN_H
 
+#include <stdbool.h>
+
 #define AU_TK_COMMENT "--"
 #define AU_TK_NEWLINE "\n"
 #define AU_TK_WHITESPACE " "
@@ -16,6 +18,7 @@
 #define AU_TK_END "end"
 #define AU_TK_USING "using"
 #define AU_TK_DEF "def"
+#define AU_TK_NOT "not"
 #define AU_TK_AND "and"
 #define AU_TK_OR "or"
 
@@ -27,7 +30,6 @@
 
 #define AU_MAX_IDENT_LEN 1024
 #define AU_MAX_STRING_LEN 65535
-#include <stdbool.h>
 
 typedef enum AuTokenType
 {
@@ -48,6 +50,7 @@ typedef enum AuTokenType
     AuTkEnd,
     AuTkUsing,
     AuTkDef,
+    AuTkNot,
     AuTkAnd,
     AuTkOr,
     AuTkLitNil,
@@ -59,7 +62,7 @@ typedef struct AUStringData
 {
     char *data;
     int len;
-} AUStringData;
+} AuStringData;
 
 typedef struct AuToken
 {
@@ -67,8 +70,8 @@ typedef struct AuToken
     union
     {
         int whitespace_len;
-        AUStringData ident_data;
-        AUStringData string_data;
+        AuStringData ident_data;
+        AuStringData string_data;
     } data;
 } AuToken;
 
@@ -93,6 +96,7 @@ static const AuTokenMatch token_matches[] = {
         {.literal = AU_TK_END, .type = AuTkEnd, .can_terminate_literal = false},
         {.literal = AU_TK_USING, .type = AuTkUsing, .can_terminate_literal = false},
         {.literal = AU_TK_DEF, .type = AuTkDef, .can_terminate_literal = false},
+        {.literal = AU_TK_NOT, .type = AuTkNot, .can_terminate_literal = false},
         {.literal = AU_TK_AND, .type = AuTkAnd, .can_terminate_literal = false},
         {.literal = AU_TK_OR, .type = AuTkOr, .can_terminate_literal = false},
         {.literal = AU_TK_LIT_NIL, .type = AuTkLitNil, .can_terminate_literal = false},
@@ -102,8 +106,8 @@ static const AuTokenMatch token_matches[] = {
 
 AuToken *au_build_tokens(const char *, int, int *);
 
-AUStringData make_string_data(const char *, int);
+AuStringData make_string_data(const char *, int);
 
-char *au_token_type_string(AuTokenType);
+char *au_token_type_to_string(AuTokenType);
 
 #endif

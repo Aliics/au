@@ -5,7 +5,15 @@
 #include "token.h"
 #include "util.h"
 
-AuVar parse(AuRuntime *, const AuToken *, int, int);
-AuVar parse_expr(AuRuntime *, const AuToken *, int, IntRange);
+typedef struct AuParseCtx
+{
+    AuRuntime *rt;
+    AuToken *tks;
+    int tks_len;
+    int ln;
+} AuParseCtx;
+
+AuVar parse(AuParseCtx *, IntRange, int);
+AuVar parse_expr(AuParseCtx *, IntRange);
 
 #endif

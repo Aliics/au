@@ -1,21 +1,24 @@
--- This is a simple hello world program... kinda.
-
 using io
 using os
 
+-- We can exclude parentheses if the function takes no arguments.
 def is_very_true?
     true and true
 end
 
-def are_you_lying?(lies)
-    not lies
+-- You might have noticed that by convention, functions resulting in bools have question marks at the end.
+-- It's not enforced, but it is convention. :)
+def are_you_lying?(lies) not lies end
+
+def shame
+    io.puts("Liar liar plants for hire")
 end
 
 if is_very_true? then
     io.puts("So true")
 end
 
-if are_you_lying?(false) then
+if not are_you_lying?(false) then
     io.puts("Thank you")
 else
     io.puts("Liar liar plants for hire")

@@ -8,12 +8,13 @@
 #include "util.h"
 
 static AuRuntime runtime = {
-        .local = {
-            .functions = (AuFunction[1024]){},
-            .functions_len = 0,
-            .variables = (AuVarDef[1024]){},
-            .variables_len = 0,
-        },
+        .local =
+                {
+                        .functions = (AuFunction[1 << 16]){},
+                        .functions_len = 0,
+                        .variables = (AuVarDef[1 << 16]){},
+                        .variables_len = 0,
+                },
         .modules =
                 (AuModule[]){
                         {
@@ -21,16 +22,16 @@ static AuRuntime runtime = {
                                 .name_len = 2,
                                 .functions =
                                         (AuFunction[]){
-                                                au_os_is_linux_function,
-                                                au_os_is_macos_function,
-                                                au_os_is_windows_function,
+                                                AU_OS_IS_LINUX_FN,
+                                                AU_OS_IS_MACOS_FN,
+                                                AU_OS_IS_WINDOWS_FN,
                                         },
                                 .functions_len = 3,
                         },
                         {
                                 .name = "io",
                                 .name_len = 2,
-                                .functions = (AuFunction[]){au_io_puts_function},
+                                .functions = (AuFunction[]){AU_IO_PUTS_FN},
                                 .functions_len = 1,
                         },
                 },
@@ -53,7 +54,14 @@ int main(const int arg_len, char **args)
 
     free(src);
 
-    parse(&runtime, tokens, tokens_len, 0);
+    AuParseCtx ctx = {
+            .rt = &runtime,
+            .tks = tokens,
+            .tks_len = tokens_len,
+            .ln = 1,
+    };
+
+    parse(&ctx, int_range(0, tokens_len - 1), 0);
 
     free(tokens);
 }

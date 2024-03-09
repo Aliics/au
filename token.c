@@ -138,9 +138,9 @@ AuToken *au_build_tokens(const char *src, const int src_len, int *out_len)
     return tokens;
 }
 
-AUStringData make_string_data(const char *str, const int len)
+AuStringData make_string_data(const char *str, const int len)
 {
-    AUStringData string_data;
+    AuStringData string_data;
     string_data.len = len;
 
     string_data.data = malloc(len + 1);
@@ -150,7 +150,7 @@ AUStringData make_string_data(const char *str, const int len)
     return string_data;
 }
 
-char *au_token_type_string(const AuTokenType type)
+char *au_token_type_to_string(const AuTokenType type)
 {
     switch (type)
     {
@@ -188,6 +188,8 @@ char *au_token_type_string(const AuTokenType type)
             return AU_TK_USING;
         case AuTkDef:
             return AU_TK_DEF;
+        case AuTkNot:
+            return AU_TK_NOT;
         case AuTkAnd:
             return AU_TK_AND;
         case AuTkOr:
